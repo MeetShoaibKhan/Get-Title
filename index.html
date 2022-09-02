@@ -1,0 +1,11 @@
+<html>
+  <head></head>
+  <body>
+    <h1>Following are the titles of given websites:</h1>
+    <ul>
+      <% titles.forEach(function(title, index) { %>
+      <li><%= urls[index] %> - "<%= title %>"</li>
+      <% }); %>
+    </ul>
+  </body>
+</html>
