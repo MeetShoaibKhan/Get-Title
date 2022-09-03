@@ -56,7 +56,7 @@ const check = (method, url) =>
           resolve(data);
         });
       } else {
-        resolve(`${url} - NO RESPONSE`);
+        resolve(`NO RESPONSE`);
       }
     });
   });
