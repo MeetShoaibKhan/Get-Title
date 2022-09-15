@@ -3,25 +3,21 @@ const https = require("https");
 
 module.exports = {
   titleExt: async (req, res) => {
-    if (req.query.address) {
-      const url = req.query.address;
 
       let results = [];
       let names = [];
       let promises = [];
 
-      if (typeof url === "string") {
+      let { address } = req.query;
+
+      if (typeof address === "string") {
         // it's a single url
-        check("GET", url).then((result) => {
-          return res.render("../index.html", {
-            titles: [result],
-            urls: [url],
-          });
-        });
-      } else {
-        //"it's a list of urls"
-        for (element of url) {
-          let tmpPromise = await check("GET", element);
+          address = [address];        
+      } 
+
+
+        for (url of address) {
+          let tmpPromise = await check("GET", url);
           promises.push(tmpPromise);
         }
 
@@ -31,23 +27,22 @@ module.exports = {
         );
         return res.render("../index.html", {
           titles: results,
-          urls: url,
+          urls: address,
         });
-      }
-    } else {
-      res.status(400).send("no url found");
-    }
+      
+
   },
 };
 
 const check = (method, url) =>
   new Promise((resolve, reject) => {
+
     if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
       url = "https://" + url;
     }
 
     if (url.slice(8, 11) != "www") {
-      url = url.slice(0, 8) + "www" + url.slice(8);
+      url = url.slice(0, 8) + "www." + url.slice(8);
     }
     console.log(url);
     urlExists(url, function (err, exists) {

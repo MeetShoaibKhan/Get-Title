@@ -3,23 +3,20 @@ const urlExist = require("url-exist");
 
 module.exports = {
   titleExt: async (req, res) => {
-    if (req.query.address) {
-      const url = req.query.address;
 
-      if (typeof url === "string") {
+      let { address } = req.query;
+
+      if (typeof address === "string") {
         // it's a single url
-        let title = await getTitle(url);
+          address = [address];        
+      } 
 
-        return res.render("../index.html", {
-          titles: [title],
-          urls: [url],
-        });
-      } else {
+
         let titles = [];
         let promises = [];
         //"it's a list of urls"
-        for (ur of url) {
-          let tmpPromise = await getTitle(ur);
+        for (url of address) {
+          let tmpPromise = await getTitle(url);
           promises.push(tmpPromise);
         }
 
@@ -27,18 +24,26 @@ module.exports = {
         let indivResult = resolved.forEach((a) => (titles = titles.concat(a)));
         return res.render("../index.html", {
           titles: titles,
-          urls: url,
+          urls: address,
         });
-      }
-    } else {
-      res.status(400).send("no url found");
-    }
+      
   },
 };
 
 const getTitle = async (url) => {
   let title = "";
-  const urlEx = await checkHtml(url);
+
+//Add https 
+    if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
+    url = "https://" + url;
+  }
+//Add www.
+  if (url.slice(8, 11) != "www") {
+    url = url.slice(0, 8) + "www." + url.slice(8);
+  }
+
+
+  const urlEx = await checkUrl(url);
   if (urlEx) {
     const html = await getHtml(url);
     title = scrapeHtml(html);
@@ -48,15 +53,7 @@ const getTitle = async (url) => {
   return title;
 };
 
-const checkHtml = async (url) => {
-  if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
-    url = "https://" + url;
-  }
-
-  if (url.slice(8, 11) != "www") {
-    url = url.slice(0, 8) + "www" + url.slice(8);
-  }
-
+const checkUrl = async (url) => {
   const exists = await urlExist(url);
   return exists;
 };
