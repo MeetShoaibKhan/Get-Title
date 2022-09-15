@@ -20,6 +20,12 @@ app.use("/I/want/title/", main);
 app.get("*", function (req, res) {
   res.status(404).send("Page Not found");
 });
+app.post("*", function (req, res) {
+  res.status(404).send("Page Not found");
+});
+app.put("*", function (req, res) {
+  res.status(404).send("Page Not found");
+});
 
 app.listen(12345, () => {
   console.log("Server running on port 12345");
